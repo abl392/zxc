@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FFEFEF">
+<title>测测你和暧昧对象多大概率在一起</title>
+<style>
+  :root{
+    --ink:#2E2E38;
+    --ink-soft:#6B6B7B;
+    --ink-mute:#9A9AAB;
+    --pink:#E8869A;
+    --pink-deep:#C96B7C;
+    --blue:#8FA6DC;
+    --card-bg:rgba(255,255,255,.78);
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    min-height:100%;
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    background:
+      radial-gradient(58vw 58vw at 10% 6%, rgba(255,197,197,.52), transparent 62%),
+      radial-gradient(52vw 52vw at 92% 10%, rgba(190,214,255,.52), transparent 64%),
+      radial-gradient(68vw 68vw at 50% 112%, rgba(190,240,220,.50), transparent 62%),
+      linear-gradient(160deg,#FFF8F4 0%,#F4F7FF 55%,#F5FBF8 100%);
+    background-attachment:fixed;
+  }
+
+  .stage{
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    min-height:100vh;
+    min-height:100dvh;
+    padding:clamp(16px,3.6vw,44px) clamp(14px,3.6vw,32px);
+  }
+
+  .card{
+    position:relative;
+    flex:0 0 auto;
+    width:min(700px,100%);
+    margin-block:auto;
+    padding:clamp(24px,4.4vw,46px);
+    border-radius:clamp(22px,3vw,30px);
+    background:var(--card-bg);
+    border:1px solid rgba(255,255,255,.9);
+    box-shadow:
+      0 30px 70px -34px rgba(122,88,110,.42),
+      0 2px 10px rgba(140,110,130,.06);
+    -webkit-backdrop-filter:blur(22px) saturate(1.12);
+    backdrop-filter:blur(22px) saturate(1.12);
+    animation:cardIn .5s cubic-bezier(.22,.9,.3,1) both;
+  }
+  @keyframes cardIn{
+    from{opacity:0;transform:translateY(18px) scale(.985);}
+    to{opacity:1;transform:none;}
+  }
+  .hidden{display:none !important;}
+
+  /* ---------- 封面 ---------- */
+  .kicker{
+    margin:0 0 14px;
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:.16em;
+    color:var(--pink-deep);
+  }
+  .cover-title{
+    margin:0 0 16px;
+    font-size:clamp(27px,5.4vw,41px);
+    line-height:1.24;
+    font-weight:700;
+    letter-spacing:-.01em;
+  }
+  .cover-title em{
+    font-style:normal;
+    background:linear-gradient(100deg,#E48A9C 0%,#8FA6DC 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .cover-sub{
+    margin:0 0 24px;
+    font-size:clamp(14px,2.7vw,16px);
+    line-height:1.75;
+    color:var(--ink-soft);
+  }
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:clamp(26px,4vw,34px);
+  }
+  .chip{
+    padding:7px 13px;
+    font-size:12.5px;
+    border-radius:999px;
+    color:#8B7A82;
+    background:rgba(255,255,255,.72);
+    border:1px solid rgba(232,140,140,.22);
+  }
+  .cover-foot{
+    margin:18px 0 0;
+    font-size:12.5px;
+    line-height:1.7;
+    color:var(--ink-mute);
+  }
+
+  /* ---------- 按钮 ---------- */
+  .btn{
+    appearance:none;
+    border:0;
+    cursor:pointer;
+    font-family:inherit;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:16px 30px;
+    font-size:16px;
+    font-weight:600;
+    color:#fff;
+    border-radius:999px;
+    background:linear-gradient(120deg,#EFA1A9 0%,#E6798E 100%);
+    box-shadow:0 14px 30px -12px rgba(226,110,130,.72);
+    transition:transform .22s ease,box-shadow .22s ease,filter .22s ease;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 20px 36px -12px rgba(226,110,130,.8);}
+  .btn:active{transform:translateY(0) scale(.99);}
+  .btn.ghost{
+    color:#7C6B74;
+    background:rgba(255,255,255,.92);
+    border:1px solid rgba(232,140,140,.26);
+    box-shadow:0 8px 22px -14px rgba(140,110,130,.6);
+  }
+  .btn.wide{width:100%;}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn-row .btn{flex:1 1 160px;}
+
+  /* ---------- 答题 ---------- */
+  .q-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+    font-size:13px;
+    color:var(--ink-mute);
+  }
+  .q-dim{
+    font-weight:600;
+    color:#8B7F93;
+    letter-spacing:.02em;
+  }
+  .progress{
+    height:6px;
+    border-radius:999px;
+    background:rgba(232,140,140,.15);
+    overflow:hidden;
+    margin-bottom:clamp(20px,3.6vw,32px);
+  }
+  .progress span{
+    display:block;
+    height:100%;
+    width:0;
+    border-radius:999px;
+    background:linear-gradient(90deg,#F6C0C0 0%,#E8869A 55%,#94A9E0 100%);
+    transition:width .45s cubic-bezier(.3,.9,.3,1);
+  }
+  .q-text{
+    margin:0 0 clamp(18px,3.2vw,26px);
+    font-size:clamp(17.5px,3.5vw,22px);
+    line-height:1.52;
+    font-weight:600;
+    letter-spacing:-.005em;
+  }
+  .opts{display:flex;flex-direction:column;gap:10px;}
+  .opt{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    width:100%;
+    padding:14px 16px;
+    text-align:left;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:clamp(14px,2.7vw,15.5px);
+    line-height:1.55;
+    color:#4B4B58;
+    border-radius:16px;
+    background:rgba(255,255,255,.62);
+    border:1px solid rgba(180,160,185,.18);
+    transition:background .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease;
+  }
+  .opt:hover{
+    background:#fff;
+    border-color:rgba(232,140,140,.42);
+    transform:translateY(-1.5px);
+    box-shadow:0 12px 24px -18px rgba(140,110,130,.7);
+  }
+  .opt .mark{
+    flex:0 0 auto;
+    width:22px;
+    height:22px;
+    margin-top:1px;
+    display:grid;
+    place-items:center;
+    font-size:11.5px;
+    font-weight:700;
+    border-radius:50%;
+    color:#C97B84;
+    background:rgba(232,140,140,.13);
+    transition:background .18s ease,color .18s ease;
+  }
+  .opt.sel{
+    background:linear-gradient(120deg,rgba(255,238,240,.96),rgba(238,244,255,.96));
+    border-color:rgba(228,120,140,.58);
+    box-shadow:0 10px 22px -16px rgba(226,110,130,.75);
+  }
+  .opt.sel .mark{
+    color:#fff;
+    background:linear-gradient(120deg,#EFA1A9,#E6798E);
+  }
+  .q-foot{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:clamp(16px,2.8vw,24px);
+  }
+  .link-btn{
+    appearance:none;
+    padding:8px 4px;
+    border:0;
+    background:none;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:13.5px;
+    color:var(--ink-mute);
+    transition:color .2s ease;
+  }
+  .link-btn:hover{color:var(--pink-deep);}
+  .link-btn:disabled{opacity:.3;cursor:default;}
+  .link-btn:disabled:hover{color:var(--ink-mute);}
+  .hint{font-size:12.5px;color:#B5AEBE;}
+
+  .fade{animation:qIn .34s cubic-bezier(.22,.9,.3,1) both;}
+  @keyframes qIn{
+    from{opacity:0;transform:translateY(10px);}
+    to{opacity:1;transform:none;}
+  }
+
+  /* ---------- 结果 ---------- */
+  .result-top{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    margin-bottom:clamp(6px,1.4vw,10px);
+  }
+  .gauge-wrap{
+    position:relative;
+    width:clamp(168px,42vw,200px);
+    aspect-ratio:1 / 1;
+    display:grid;
+    place-items:center;
+  }
+  .gauge{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    transform:rotate(-90deg);
+  }
+  .gauge .track{fill:none;stroke:rgba(232,140,140,.13);stroke-width:12;}
+  .gauge .bar{
+    fill:none;
+    stroke-width:12;
+    stroke-linecap:round;
+    stroke:url(#gaugeGrad);
+    stroke-dasharray:540.35;
+    stroke-dashoffset:540.35;
+    transition:stroke-dashoffset 1.25s cubic-bezier(.2,.8,.2,1);
+  }
+  .gauge-num{
+    position:relative;
+    font-size:clamp(38px,9.6vw,52px);
+    font-weight:700;
+    line-height:1;
+    letter-spacing:-.03em;
+    background:linear-gradient(120deg,#E07A88 0%,#8FA6DC 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .gauge-num small{
+    font-size:.42em;
+    font-weight:600;
+    margin-left:1px;
+    letter-spacing:0;
+  }
+  .gauge-cap{
+    font-size:12.5px;
+    letter-spacing:.14em;
+    color:#B5ADBB;
+    margin-top:2px;
+  }
+  .tier{
+    margin:clamp(14px,2.6vw,20px) 0 10px;
+    font-size:clamp(20px,4.4vw,26px);
+    font-weight:700;
+    line-height:1.35;
+    text-align:center;
+    letter-spacing:-.01em;
+  }
+  .verdict{
+    margin:0 auto clamp(20px,3.4vw,28px);
+    max-width:32em;
+    font-size:clamp(14.5px,2.9vw,16.5px);
+    line-height:1.78;
+    text-align:center;
+    color:#695F68;
+  }
+
+  .dims{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-bottom:clamp(20px,3.2vw,26px);
+    padding:clamp(16px,3vw,22px);
+    border-radius:18px;
+    background:rgba(255,255,255,.58);
+    border:1px solid rgba(190,175,195,.16);
+  }
+  .dim-row{
+    display:grid;
+    grid-template-columns:66px 1fr;
+    gap:6px 14px;
+    align-items:center;
+  }
+  .dim-name{font-size:13px;font-weight:600;color:#5B5560;}
+  .dim-bar{height:8px;border-radius:999px;background:rgba(160,150,175,.14);overflow:hidden;}
+  .dim-bar i{
+    display:block;
+    height:100%;
+    width:0;
+    border-radius:999px;
+    background:linear-gradient(90deg,#F2B5B5,#E58B9C);
+    transition:width .9s cubic-bezier(.2,.8,.2,1);
+  }
+  .dim-note{
+    grid-column:2;
+    font-size:12.5px;
+    line-height:1.5;
+    color:#8D8494;
+  }
+
+  .notes{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin:0 0 clamp(20px,3.2vw,26px);
+    padding:0;
+    list-style:none;
+  }
+  .notes li{
+    position:relative;
+    padding-left:19px;
+    font-size:clamp(14px,2.6vw,15.5px);
+    line-height:1.78;
+    color:#55505C;
+  }
+  .notes li::before{
+    content:"";
+    position:absolute;
+    left:4px;
+    top:.72em;
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:linear-gradient(120deg,#EFA1A9,#93A8DF);
+  }
+
+  .tips{
+    margin-bottom:clamp(22px,3.4vw,28px);
+    padding:clamp(16px,3vw,22px);
+    border-radius:18px;
+    background:linear-gradient(150deg,rgba(255,241,242,.88),rgba(240,246,255,.88));
+    border:1px solid rgba(230,190,200,.32);
+  }
+  .tips h3{
+    margin:0 0 12px;
+    font-size:12.5px;
+    font-weight:700;
+    letter-spacing:.1em;
+    color:#B4707E;
+  }
+  .tips ol{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+    margin:0;
+    padding-left:19px;
+    font-size:clamp(13.5px,2.5vw,15px);
+    line-height:1.72;
+    color:#5B5560;
+  }
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:32px;
+    transform:translate(-50%,14px);
+    padding:11px 20px;
+    font-size:13.5px;
+    color:#fff;
+    border-radius:999px;
+    background:rgba(58,52,62,.9);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease,transform .25s ease;
+    z-index:9;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0);}
+
+  @media (max-width:520px){
+    body{background-attachment:scroll;}
+    .card{padding:22px 19px;border-radius:23px;}
+    .cover-title{margin-bottom:13px;}
+    .opt{padding:12px 13px;gap:10px;border-radius:14px;}
+    .dim-row{grid-template-columns:58px 1fr;gap:5px 10px;}
+    .hint{display:none;}
+    .btn-row .btn{flex:1 1 100%;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important;transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <main class="card">
+
+    <!-- 封面 -->
+    <section id="cover">
+      <p class="kicker">A SMALL QUIZ ABOUT THE TWO OF YOU</p>
+      <h1 class="cover-title">你和<em>暧昧对象</em><br>多大概率在一起</h1>
+      <p class="cover-sub">40 道题，4 分钟。不谈玄学，只谈证据。<br>每道题都写得足够具体，具体到你一边选一边会想起某条聊天记录。</p>
+      <div class="chips">
+        <span class="chip">40 题</span>
+        <span class="chip">约 4 分钟</span>
+        <span class="chip">选第一反应</span>
+        <span class="chip">可回看改答案</span>
+      </div>
+      <button class="btn wide" id="btnStart">开始测试</button>
+      <p class="cover-foot">结果仅供娱乐参考。真正的答案，在你愿不愿意先说那句话里。</p>
+    </section>
+
+    <!-- 答题 -->
+    <section id="quiz" class="hidden">
+      <div class="q-head">
+        <span id="qIndex">第 1 / 40 题</span>
+        <span class="q-dim" id="qDim">主动度</span>
+      </div>
+      <div class="progress"><span id="bar"></span></div>
+      <div id="qBody">
+        <p class="q-text" id="qText"></p>
+        <div class="opts" id="opts"></div>
+      </div>
+      <div class="q-foot">
+        <button class="link-btn" id="btnPrev">← 上一题</button>
+        <span class="hint">按 1 – 4 键也可以选</span>
+      </div>
+    </section>
+
+    <!-- 结果 -->
+    <section id="result" class="hidden">
+      <div class="result-top">
+        <div class="gauge-wrap">
+          <svg class="gauge" viewBox="0 0 200 200" aria-hidden="true">
+            <defs>
+              <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#F5BEBE"/>
+                <stop offset="52%" stop-color="#E8869A"/>
+                <stop offset="100%" stop-color="#94A9E0"/>
+              </linearGradient>
+            </defs>
+            <circle class="track" cx="100" cy="100" r="86"/>
+            <circle class="bar" id="gaugeBar" cx="100" cy="100" r="86"/>
+          </svg>
+          <div class="gauge-num"><span id="num">0</span><small>%</small></div>
+        </div>
+        <span class="gauge-cap">你们在一起的可能性</span>
+      </div>
+
+      <h2 class="tier" id="tierTitle"></h2>
+      <p class="verdict" id="verdict"></p>
+
+      <div class="dims" id="dims"></div>
+      <ul class="notes" id="notes"></ul>
+
+      <div class="tips">
+        <h3>接下来可以做的三件事</h3>
+        <ol id="tipsList"></ol>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn ghost" id="btnCopy">复制结果</button>
+        <button class="btn" id="btnRetry">重新测一次</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var DIMS = [
+    { name: "主动度", notes: ["先开口的多半是你", "你们推得还算均匀", "他会主动找上你"] },
+    { name: "亲密度", notes: ["话题还停在安全区", "聊得来，但留了余地", "你们已经聊到很私人的地方"] },
+    { name: "唯一性", notes: ["你暂时还不是那个例外", "有点特别，但不够确定", "他对你明显不一样"] },
+    { name: "未来感", notes: ["还没人提到「以后」", "有暗示，没有计划", "他的话里已经把你带进去了"] }
+  ];
+
+  var Q = [
+    /* ---- 主动度 0 ---- */
+    { d: 0, q: "最近这一周，你们的聊天通常是谁先开口？", o: [
+      "几乎每次都是我先说话",
+      "我先开口更多",
+      "交替着来，差不多",
+      "他先开口更多，甚至会没头没尾突然冒出来"
+    ]},
+    { d: 0, q: "他回你的速度，跟他回别人的速度比——", o: [
+      "没对比过，但总觉得他回我很慢",
+      "和其他人差不多，没什么特别",
+      "明显快一点",
+      "几乎秒回，或者会主动解释为什么回晚了"
+    ]},
+    { d: 0, q: "你发一条没什么正经事的消息（比如随手拍的天空），他一般——", o: [
+      "已读不回，或者隔很久回一个表情",
+      "回一个不冷不热的字",
+      "会顺着你的话往下聊",
+      "会接住这个话题，还自己再抛一个回来"
+    ]},
+    { d: 0, q: "聊天断了之后，重新接起来的方式通常是——", o: [
+      "基本都是我另起一个头",
+      "我找机会「恰巧」发点什么",
+      "他偶尔会突然冒出来一句",
+      "三天之内他一定会主动找我一次"
+    ]},
+    { d: 0, q: "他会主动跟你分享一件和你无关、只是他自己的事吗？", o: [
+      "从来没有，都是我问他才答",
+      "很少，要我先问",
+      "偶尔，比如他加班了会跟我说一声",
+      "经常，今天吃什么都会发给我看"
+    ]},
+    { d: 0, q: "出门前，他会不会对你的样子有反应？", o: [
+      "从没提过",
+      "会说你今天挺好看",
+      "会注意到细节，比如「换发色了」",
+      "会主动要我发照片，或者问我今天穿什么"
+    ]},
+    { d: 0, q: "群里聊天的时候，他对你的态度——", o: [
+      "和所有人一样，看不出差别",
+      "会接我的话，但不特别",
+      "对我明显比在私下更活跃",
+      "会单独 @我，或者把群里的话挪到私聊继续说"
+    ]},
+    { d: 0, q: "你们的对话里，「下次」这个词出现过吗？", o: [
+      "没有",
+      "我说过，他嗯了一声就过去了",
+      "他说过，但没说具体",
+      "他说过，而且说了具体的时间和地点"
+    ]},
+    { d: 0, q: "如果他一天没回你消息，通常的剧情是——", o: [
+      "我会忍不住再问一句",
+      "我会不高兴，但装作没有",
+      "我等着，他晚上一定会回",
+      "他会先自己解释一句「刚在忙」"
+    ]},
+    { d: 0, q: "他有没有「没事找事」地给你发过消息？比如一首歌、一个烂梗图。", o: [
+      "从来没有",
+      "偶尔，一看就是群发那种",
+      "会，但不太多",
+      "经常，一天能来好几条"
+    ]},
+
+    /* ---- 亲密度 1 ---- */
+    { d: 1, q: "你们聊天最晚聊到过几点？", o: [
+      "十一点前基本就结束了",
+      "十二点左右",
+      "凌晨一两点",
+      "聊到三四点，第二天还在接着聊"
+    ]},
+    { d: 1, q: "他跟你讲过家里的糟心事吗？", o: [
+      "没有，连他父母什么情况我都不知道",
+      "提过一两句",
+      "讲过具体的矛盾和烦恼",
+      "讲过很私人的事，他说从没跟别人讲过"
+    ]},
+    { d: 1, q: "你们之间有只有两个人才懂的东西吗？", o: [
+      "没有，都是很正常的对话",
+      "有一两个共同的梗",
+      "有只有我们才懂的暗号",
+      "我们有「那件事」，别人都不知道"
+    ]},
+    { d: 1, q: "他会在你面前露弱吗——累、丧、丢脸的那种？", o: [
+      "只谈他做得好的事",
+      "偶尔抱怨两句",
+      "会跟我讲他的低落",
+      "会在我面前露出很脆弱的一面"
+    ]},
+    { d: 1, q: "你们的聊天里，有多大比例是没什么用的废话？", o: [
+      "几乎没有，都是有事说事",
+      "三成左右",
+      "一半以上",
+      "基本全是废话，正事一句话就说完了"
+    ]},
+    { d: 1, q: "他会记得你自己都忘了的细节吗？", o: [
+      "不会，我说过的话他都记不清",
+      "大事记得，小事不记得",
+      "会记得我说过的一些小事",
+      "会记得我随口提过的日期、口味、讨厌的东西"
+    ]},
+    { d: 1, q: "你们有过身体上的接触吗？", o: [
+      "没有，一直保持礼貌距离",
+      "有过一次很偶然的",
+      "有牵手、靠肩、拥抱这类自然的接触",
+      "有明确带着暧昧意味的碰触，而且谁都没避开"
+    ]},
+    { d: 1, q: "他问过你的过去吗——前任、家里、从前受过的事。", o: [
+      "没有",
+      "问过一两句，没往下聊",
+      "认真问过，也听我说完",
+      "问得很细，还会说「以后不会那样」"
+    ]},
+    { d: 1, q: "你说过「我今天很难受」之类的信号吗，他当时——", o: [
+      "没说过，也没必要说",
+      "说了，他回了句「怎么了」就没下文",
+      "他会打电话过来",
+      "他会出现在我面前"
+    ]},
+    { d: 1, q: "你们面对面时，能一起安静坐着而不尴尬吗？", o: [
+      "没怎么单独待过",
+      "有，但那种安静很尴尬",
+      "能，安静着也不难受",
+      "能，而且那种安静里明显有东西"
+    ]},
+
+    /* ---- 唯一性 2 ---- */
+    { d: 2, q: "他身边还有别的暧昧对象吗？", o: [
+      "有，而且我很确定",
+      "可能有，我不清楚",
+      "应该没有，但我不敢肯定",
+      "确定没有，我是唯一那个"
+    ]},
+    { d: 2, q: "他提起别的异性时，你的真实感受是——", o: [
+      "他经常提，我很难受",
+      "会提，我只能装作不在意",
+      "很少提",
+      "几乎不提，偶尔提还会补一句「就是同事」"
+    ]},
+    { d: 2, q: "他有没有为你破过例？本来不看的电影、不去的地方、不熬的夜。", o: [
+      "没有",
+      "不太确定，好像没有",
+      "有过小破例",
+      "有过很明确的，他说换别人他不会"
+    ]},
+    { d: 2, q: "他给你的优先级，和你给他的比——", o: [
+      "我对他比对谁都上心，他对我很一般",
+      "差不多",
+      "我感觉得到他的在意",
+      "他忙得要死的时候，还是会抽时间回我"
+    ]},
+    { d: 2, q: "这段关系，他愿意让多少人知道？", o: [
+      "只在私下，公开场合装作不熟",
+      "群里正常互动，除此以外没有",
+      "他的朋友知道我这个人",
+      "他会把我介绍给他的朋友，带我出现在他常去的地方"
+    ]},
+    { d: 2, q: "他会在意你和其他人相处吗？", o: [
+      "完全不在意",
+      "会开一句玩笑就过去了",
+      "感觉得到他在意，但他不说",
+      "他会明确表现出不舒服，甚至吃醋"
+    ]},
+    { d: 2, q: "他在你面前说过「我暂时不想谈恋爱」吗？", o: [
+      "说过，说得很明确",
+      "隐约提过",
+      "没提过",
+      "说过相反的话，比如「想找个人定下来」"
+    ]},
+    { d: 2, q: "如果他明天恋爱了，会第一个告诉你吗？", o: [
+      "不会，我大概会从别人口中听说",
+      "会，但也只是顺口一提",
+      "会提前跟我说",
+      "不可能发生，因为他不会跟别人在一起"
+    ]},
+    { d: 2, q: "他为你花过超出日常的时间和心思吗？不算 AA 那种。", o: [
+      "没有",
+      "有过一点，但都很随意",
+      "有过特意安排的",
+      "有过明显超出朋友范围的付出"
+    ]},
+    { d: 2, q: "你们之间，谁更怕失去谁？", o: [
+      "我怕，他无所谓",
+      "我怕得多一些",
+      "说不清",
+      "他更怕，因为他确认不了我的态度"
+    ]},
+
+    /* ---- 未来感 3 ---- */
+    { d: 3, q: "他提过「以后」吗？以后一起去、以后你怎样之类的。", o: [
+      "没有",
+      "我说过，他没接",
+      "他说过，但听起来像玩笑",
+      "他说过，而且说到了很具体的以后"
+    ]},
+    { d: 3, q: "你在聊未来的事时，他的反应是——", o: [
+      "我基本不提",
+      "我提了，他绕开",
+      "他会顺着聊两句",
+      "他会主动加入，甚至问「那我呢」"
+    ]},
+    { d: 3, q: "你们有过「像约会」却没说破的场合吗？", o: [
+      "没有，都是正常场合",
+      "有过一次，但人很多",
+      "单独吃过饭、看过电影",
+      "有过很多次，而且双方都在装傻"
+    ]},
+    { d: 3, q: "关于生日、圣诞、跨年这种日子，他——", o: [
+      "没提过",
+      "发了条祝福",
+      "送了东西，或者约了见面",
+      "提前很久就问我打算怎么过"
+    ]},
+    { d: 3, q: "他试探过你的态度吗？比如问「你喜欢什么类型」。", o: [
+      "没有",
+      "开玩笑一样问过",
+      "认真问过",
+      "问过之后，明显在往那个方向靠"
+    ]},
+    { d: 3, q: "你们中间隔着的那层窗户纸，是谁在装作看不见？", o: [
+      "我根本不确定那是不是窗户纸",
+      "是我一个人在装看不见",
+      "两个人都在装，但彼此都知道",
+      "他也在装，而且装得比我还辛苦"
+    ]},
+    { d: 3, q: "现在有人当面问「你们在一起了吗」，他会怎么答？", o: [
+      "会直接否认",
+      "会说「就是朋友」",
+      "会含糊地笑一下",
+      "会说「还没」——注意这个「还没」"
+    ]},
+    { d: 3, q: "你们最近一次见面之后，他提过下次吗？", o: [
+      "没有",
+      "说了句客套的「回头约」",
+      "他会自己找理由再约一次",
+      "他当天就把下一次定下来了"
+    ]},
+    { d: 3, q: "你心里最怕的那个结局是什么？", o: [
+      "他其实从没把我当回事",
+      "他只是享受被喜欢的感觉",
+      "我们错过了，那句话来不及说",
+      "在一起之后，我还是会失去他"
+    ]},
+    { d: 3, q: "如果你现在直接告诉他「我喜欢你」，你猜他会——", o: [
+      "会躲，会尴尬，然后慢慢淡掉",
+      "会说「我一直当你是朋友」",
+      "会沉默很久，然后说「给我点时间」",
+      "会说「我以为你早就知道了」"
+    ]}
+  ];
+
+  var TIERS = [
+    { max: 28, title: "火苗还没起来", verdict: "他不是没看见你，是没往那个方向看。",
+      notes: [
+        "你在这段关系里投入的注意力，明显多于他。多数时候那不是暧昧，是你在替他的沉默找解释。",
+        "真正的信号是「他为你多做了一件事」，不是「他对你还算客气」。这两者差得很远。"
+      ],
+      tips: [
+        "连着三次都是你先开口之后，停一周。不是赌气，是看这段关系自己会不会呼吸。",
+        "把「他今天没回我」从一件情绪事件，降级成一个事实：他忙，仅此而已。",
+        "给自己开一条新的线。不是为了让他紧张，是把注意力从一个人身上挪开一点。"
+      ]},
+    { max: 48, title: "有温度，但还烧不起来", verdict: "你们之间有真实的亲近感，缺的是方向。",
+      notes: [
+        "聊得舒服不是证据。人对「安全的人」也会很舒服，但不会因此心动。",
+        "要看的只有一件事：他有没有为你多走一步——多花一次时间、破一次例、说一句本不必说的话。"
+      ],
+      tips: [
+        "制造一次只有你们两个人的场合，不谈工作、不谈别人，看他怎么处理那几分钟的沉默。",
+        "把试探换成明确。「周六我有两张票，你来不来」比「你最近有空吗」有效一百倍。",
+        "在你拒绝他一次之后，观察他的反应。真正在意的人会重来一次。"
+      ]},
+    { max: 66, title: "临界点，只差一句话", verdict: "所有该出现的信号都出现过，只是没人把它们连成一条线。",
+      notes: [
+        "你们已经在用恋人的方式相处，却还在用朋友的名义解释自己。",
+        "这种状态有保质期。拖过最烫的那段时间，人会开始给自己找退路，然后说服自己「其实也没那么喜欢」。"
+      ],
+      tips: [
+        "别再等完美时机。完美时机是暧昧里最好用的托词。",
+        "选一次见面快结束、气氛还热的时候说。不要选在深夜的聊天框里。",
+        "只说自己的感受，不要追问「你到底怎么想」。你负责把话说清楚，他负责给答案。"
+      ]},
+    { max: 84, title: "大概率在一起，只等一个人先开口", verdict: "这不是「会不会」的问题，是「谁先说」的问题。",
+      notes: [
+        "他给你的待遇，不像是在给一个普通朋友。你心里其实早就知道，只是不敢确认。",
+        "继续拖下去的代价，比说出来被拒绝的代价更高——因为他也在等你。"
+      ],
+      tips: [
+        "找一次见面，把话说明白，一句就够。不用设计场景，不用铺垫。",
+        "如果他退了，那也是答案。比你现在的悬着，划算得多。",
+        "顺便分清：你怕的是「他不喜欢我」，还是「被拒绝」这件事本身。这两个是不同的麻烦。"
+      ]},
+    { max: 120, title: "几乎已经在一起了", verdict: "你们缺的不是感情，是一个名分。",
+      notes: [
+        "按你的选择，他已经把你放进了「我的人」这个范围里，只是还没说出来。",
+        "这种事实关系最大的风险不是失败，是无限延期。总有一天你们会累，会以为彼此只是习惯。"
+      ],
+      tips: [
+        "直接说。别等节日，别等某个特别的日子，那些都是拖延的借口。",
+        "说完要一个明确的回答，不接受「再等等」「顺其自然」。",
+        "成了就说出去，让身边人知道。模糊的关系最怕没有见证。"
+      ]}
+  ];
+
+  var RING_C = 2 * Math.PI * 86;
+
+  var answers = new Array(Q.length).fill(null);
+  var idx = 0;
+  var locked = false;
+  var lastP = 0;
+  var lastTier = null;
+
+  function el(id) { return document.getElementById(id); }
+
+  function show(name) {
+    el("cover").classList.toggle("hidden", name !== "cover");
+    el("quiz").classList.toggle("hidden", name !== "quiz");
+    el("result").classList.toggle("hidden", name !== "result");
+  }
+
+  function startQuiz() {
+    answers = new Array(Q.length).fill(null);
+    idx = 0;
+    locked = false;
+    show("quiz");
+    renderQ(0);
+    window.scrollTo(0, 0);
+  }
+
+  function renderQ(dir) {
+    var q = Q[idx];
+    el("qIndex").textContent = "第 " + (idx + 1) + " / " + Q.length + " 题";
+    el("qDim").textContent = DIMS[q.d].name;
+    el("bar").style.width = ((idx + 1) / Q.length * 100) + "%";
+    el("qText").textContent = q.q;
+    el("btnPrev").disabled = idx === 0;
+
+    var box = el("opts");
+    box.innerHTML = "";
+    var letters = ["A", "B", "C", "D"];
+    q.o.forEach(function (text, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "opt" + (answers[idx] === i ? " sel" : "");
+      b.innerHTML = '<span class="mark">' + letters[i] + "</span><span>" + text + "</span>";
+      b.addEventListener("click", function () { pick(i); });
+      box.appendChild(b);
+    });
+
+    var body = el("qBody");
+    body.classList.remove("fade");
+    void body.offsetWidth;
+    body.classList.add("fade");
+  }
+
+  function pick(v) {
+    if (locked) return;
+    locked = true;
+    answers[idx] = v;
+
+    var nodes = el("opts").children;
+    for (var k = 0; k < nodes.length; k++) {
+      nodes[k].classList.toggle("sel", k === v);
+    }
+
+    setTimeout(function () {
+      locked = false;
+      if (idx < Q.length - 1) {
+        idx++;
+        renderQ(1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        finish();
+      }
+    }, 190);
+  }
+
+  function prev() {
+    if (idx === 0 || locked) return;
+    idx--;
+    renderQ(-1);
+  }
+
+  function finish() {
+    if (answers.indexOf(null) !== -1) {
+      var miss = answers.indexOf(null);
+      idx = miss;
+      renderQ(0);
+      return;
+    }
+    var dim = [0, 0, 0, 0];
+    var total = 0;
+    Q.forEach(function (q, i) {
+      dim[q.d] += answers[i];
+      total += answers[i];
+    });
+
+    var p = Math.round(5 + (total / (Q.length * 3)) * 90);
+    lastP = p;
+
+    var tier = TIERS[TIERS.length - 1];
+    for (var i = 0; i < TIERS.length; i++) {
+      if (p <= TIERS[i].max) { tier = TIERS[i]; break; }
+    }
+    lastTier = tier;
+
+    show("result");
+    el("tierTitle").textContent = tier.title;
+    el("verdict").textContent = tier.verdict;
+
+    el("notes").innerHTML = "";
+    tier.notes.forEach(function (n) {
+      var li = document.createElement("li");
+      li.textContent = n;
+      el("notes").appendChild(li);
+    });
+
+    el("tipsList").innerHTML = "";
+    tier.tips.forEach(function (t) {
+      var li = document.createElement("li");
+      li.textContent = t;
+      el("tipsList").appendChild(li);
+    });
+
+    var dims = el("dims");
+    dims.innerHTML = "";
+    DIMS.forEach(function (d, i) {
+      var pct = Math.round(dim[i] / 30 * 100);
+      var note = pct < 50 ? d.notes[0] : (pct < 75 ? d.notes[1] : d.notes[2]);
+      var row = document.createElement("div");
+      row.className = "dim-row";
+      row.innerHTML =
+        '<span class="dim-name">' + d.name + "</span>" +
+        '<span class="dim-bar"><i></i></span>' +
+        '<span class="dim-note">' + note + "　" + pct + "%</span>";
+      dims.appendChild(row);
+      var bar = row.querySelector("i");
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { bar.style.width = pct + "%"; });
+      });
+    });
+
+    var bar = el("gaugeBar");
+    bar.style.strokeDasharray = RING_C;
+    bar.style.strokeDashoffset = RING_C;
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        bar.style.strokeDashoffset = RING_C * (1 - p / 100);
+      });
+    });
+
+    countUp(el("num"), p, 1200);
+    window.scrollTo(0, 0);
+  }
+
+  function countUp(node, to, dur) {
+    var t0 = performance.now();
+    function step(t) {
+      var k = Math.min(1, (t - t0) / dur);
+      var e = 1 - Math.pow(1 - k, 3);
+      node.textContent = Math.round(to * e);
+      if (k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function toast(msg) {
+    var t = el("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function () { t.classList.remove("show"); }, 2000);
+  }
+
+  function copyResult() {
+    if (!lastTier) return;
+    var txt = "我在「你和暧昧对象多大概率在一起」测出了 " + lastP + "% —— " + lastTier.title + "\n" + lastTier.verdict;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(function () {
+        toast("已复制到剪贴板");
+      }).catch(function () {
+        toast("复制失败，可长按文字手动选取");
+      });
+    } else {
+      toast("当前浏览器不支持复制，可长按文字手动选取");
+    }
+  }
+
+  el("btnStart").addEventListener("click", startQuiz);
+  el("btnPrev").addEventListener("click", prev);
+  el("btnRetry").addEventListener("click", startQuiz);
+  el("btnCopy").addEventListener("click", copyResult);
+
+  document.addEventListener("keydown", function (e) {
+    if (el("quiz").classList.contains("hidden")) return;
+    var n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 4) { e.preventDefault(); pick(n - 1); return; }
+    if (e.key === "ArrowLeft" || e.key === "Backspace") { e.preventDefault(); prev(); }
+  });
+})();
+</script>
+</body>
+</html>
